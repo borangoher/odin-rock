@@ -1,3 +1,20 @@
+const resultBox = document.querySelector('#result');
+const pScoreBox = document.querySelector('#player-score');
+const cScoreBox = document.querySelector('#computer-score');
+
+const rockButton = document.querySelector('#rock');
+const paperButton = document.querySelector('#paper');
+const scissorsButton = document.querySelector('#scissors');
+
+rockButton.addEventListener('click', game);
+paperButton.addEventListener('click', game);
+scissorsButton.addEventListener('click', game);
+
+let noTurns = parseInt(prompt("For how many turns will you play?", "1"));
+let playerScore = 0;
+let compScore = 0;
+let playerMove;
+
 function computerMove  () {
     let rand = Math.random();
     if (rand <= 0.333) {
@@ -42,66 +59,59 @@ function computeWinner (pMove, cMove) {
 
 }
 
-function getPlayerMove () {
-    let move;
-    const validMoves = ["ROCK", "PAPER", "SCISSORS"];
-
-    while (true) {
-       move = prompt("What move will you play?", "rock");
-       move = move.toUpperCase();
-
-       if (!(validMoves.includes(move))){
-        console.log("Please play a valid move.");
-       } else {
-           break;
-       }
-    }
-
-    return move;
-}
-
 function gameLogic (playerMove, cpuMove) {
     let winner = computeWinner(playerMove, cpuMove);
 
     if (winner == 1) {
-        console.log(`Congrats! You won! ${playerMove} beats ${cpuMove}.`);
+        resultBox.textContent = `Congrats! You won! ${playerMove} beats ${cpuMove}.`;
         return 1;
     } else if (winner == 2) {
-        console.log(`You lost. ${cpuMove} beats ${playerMove}.`);
+        resultBox.textContent = `You lost. ${cpuMove} beats ${playerMove}.`;
         return 2;
     } else {
-        console.log(`It's a draw. Both players played ${playerMove}.`);
+        resultBox.textContent = `It's a draw. Both players played ${playerMove}.`;
         return 3;
     }
 }
 
-function gameProper () {
-    let noTurns = parseInt(prompt("For how many turns will you play?", "1"));
+function gameProper (playerMove) {
+    let cpuMove, winner;
+    
+    cpuMove = computerMove();
+    winner = gameLogic(playerMove, cpuMove);
 
-    let i;
-    let playerScore = 0;
-    let compScore = 0;
-    let cpuMove, playerMove, winner;
-
-    for(i=0; i<noTurns; i++) {
-        cpuMove = computerMove();
-        playerMove = getPlayerMove();
-        winner = gameLogic(playerMove, cpuMove);
-
-        if (winner == 1) {
-            playerScore += 1;
-        } else if (winner == 2) {
-            compScore += 1;
-        }
-    }
-
-    if (playerScore > compScore) {
-        console.log("You win!");
-    } else if (playerScore < compScore) {
-        console.log("You lose.");
-    } else {
-        console.log("It's a draw.");
+    if (winner == 1) {
+        playerScore += 1;
+        pScoreBox.textContent = playerScore.toString();
+    } else if (winner == 2) {
+        compScore += 1;
+        cScoreBox.textContent = compScore.toString();
     }
 }
 
-gameProper()
+function game () {
+    noTurns--;
+    
+    if (noTurns>0) {
+        
+        if (this.id == "rock"){
+            playerMove = "ROCK";
+        } else if (this.id == "paper"){
+            playerMove = "PAPER";
+        } else {
+            playerMove = "SCISSORS";
+        }
+
+        gameProper(playerMove);
+    } else {
+        if (playerScore > compScore) {
+            resultBox.textContent = "You win!";
+        } else if (playerScore < compScore) {
+            resultBox.textContent = "You lose.";
+        } else {
+            resultBox.textContent = "It's a draw.";
+        }
+    }
+}
+
+
